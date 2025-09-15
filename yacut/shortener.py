@@ -1,5 +1,6 @@
 import secrets
 import string
+from typing import Optional
 from urllib.parse import urlparse
 
 from sqlalchemy.exc import IntegrityError
@@ -34,13 +35,10 @@ def normalize_url(url: str) -> str:
 
 
 def create_short_link(
-        original_url: str, custom_slug: str | None = None, attempts: int = 32
+    original_url: str,
+    custom_slug: Optional[str] = None,
+    attempts: int = 32,
 ):
-    """
-    Если custom_slug задан — пытаемся сохранить как есть.
-    Если не задан — генерируем 6-символьный код и гарантируем уникальность:
-    пробуем до `attempts` раз, ловим IntegrityError на гонках и перегенерируем.
-    """
     original_url = normalize_url(original_url)
     if custom_slug:
         obj = URLMap(original=original_url, short=custom_slug)
