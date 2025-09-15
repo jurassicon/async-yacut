@@ -14,16 +14,6 @@ migrate = Migrate(app, db)
 from . import models
 from .models import URLMap
 
-with app.app_context():
-    insp = inspect(db.engine)
-    table_name = URLMap.__tablename__
-    if not insp.has_table(table_name):
-        URLMap.__table__.create(db.engine)
-        print(f"Таблица создана: {table_name}")
-    else:
-        print(f"Таблица уже существует: {table_name}")
-    print('Текущие таблицы:', insp.get_table_names())
-
 
 from . import error_handlers
 from . import views, api_views
