@@ -14,7 +14,7 @@ MAX_ONE_FILE = 20 * 1024 * 1024
 
 ALLOWED_EXTS = {
     'jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp',
-    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'rtf', 'txt', 'csv',
+    'pdf', 'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'csv',
     'zip', 'rar', '7z', 'tar',
     'mp3', 'wav',
     'mp4', 'mov',
@@ -62,7 +62,7 @@ class FileUploaderForm(FlaskForm):
                 message=(
                     'Недопустимый формат. Разрешены: '
                     '.jpg, .jpeg, .png, .gif, .webp, .bmp, '
-                    '.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .rtf, .txt, .csv, '
+                    '.pdf, .doc, .docx, .xls, .xlsx, .ppt, .pptx, .txt, .csv, '
                     '.zip, .rar, .7z, .tar, '
                     '.mp3, .wav, .mp4, .mov'
                 ),
