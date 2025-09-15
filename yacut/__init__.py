@@ -2,7 +2,7 @@
 from flask import Flask
 from flask_migrate import Migrate
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import inspect
+
 from settings import Config
 
 app = Flask(__name__)
@@ -13,7 +13,6 @@ migrate = Migrate(app, db)
 
 from . import models
 from .models import URLMap
-
 
 from . import error_handlers
 from . import views, api_views
