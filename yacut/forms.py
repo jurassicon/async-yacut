@@ -2,13 +2,12 @@ import re
 
 from flask_wtf import FlaskForm
 from flask_wtf.file import MultipleFileField, FileAllowed
-from wtforms import StringField, SubmitField, TextAreaField
+from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, Length, Optional, ValidationError
 
 from .models import URLMap
 
 SHORT_RE = re.compile(r'^[A-Za-z0-9]+$')
-# Резервированные пути (по ТЗ нужен как минимум files)
 RESERVED = {'files'}
 MAX_FILES = 10
 MAX_ONE_FILE = 20 * 1024 * 1024
@@ -42,14 +41,14 @@ class ShortLinkForm(FlaskForm):
         if not field.data:
             return
         slug = field.data.strip()
-        # 1) Проверяем набор символов
+
         if not SHORT_RE.match(slug):
             raise ValidationError('Допустимы только латинские буквы и цифры.')
-        # 2) Резерв
+
         if slug.lower() in RESERVED:
             raise ValidationError(
                 'Предложенный вариант короткой ссылки уже существует.')
-        # 3) Занятость
+
         if _is_taken(slug):
             raise ValidationError(
                 'Предложенный вариант короткой ссылки уже существует.')
@@ -59,9 +58,7 @@ class FileUploaderForm(FlaskForm):
     files = MultipleFileField(
         validators=[
             FileAllowed(
-                # Список разрешенных расширений для файлов.
                 ALLOWED_EXTS,
-                # Сообщение, в случае если расширение не совпадает.
                 message=(
                     'Недопустимый формат. Разрешены: '
                     '.jpg, .jpeg, .png, .gif, .webp, .bmp, '
@@ -75,8 +72,5 @@ class FileUploaderForm(FlaskForm):
     submit = SubmitField('Загрузить')
 
     def validate_files(self, field):
-
         if not field.data:
             raise ValidationError('Необходимо загрузить хотя бы один файл')
-
-
