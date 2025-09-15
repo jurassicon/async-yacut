@@ -1,6 +1,4 @@
-# error_handlers.py
 from flask import jsonify, render_template, request, redirect, url_for, flash
-from werkzeug.exceptions import RequestEntityTooLarge
 
 from . import app, db
 
