@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% block content %}
+<main>
+
+  <section class="container my-5 px-4">
+    <h1 class="text-center"><span style="color:red">Ошибка</span> 404</h1>
+    <p class="text-center my-4">
+      Что-то пошло не по плану... <a href="{{ url_for('index_view') }}">Вернуться на главную</a>
+    </p>
+    <div class="container">
+      <div class="row my-3">
+        <div class="col-sm">
+        </div>
+        <div class="col-sm">
+          <img class="img-fluid mx-auto d-block" src="{{ url_for('static', filename='img/the-simpsons-homer.gif') }}" alt="" />
+        </div>
+        <div class="col-sm">
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+{% endblock %}
