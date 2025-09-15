@@ -11,11 +11,9 @@ app.config.from_object(Config)
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-# 1) СНАЧАЛА импортируем модели, чтобы ORM их «увидела».
 from . import models
 from .models import URLMap
 
-# 2) Опционально: создаём таблицу URLMap, если её нет.
 with app.app_context():
     insp = inspect(db.engine)
     table_name = URLMap.__tablename__
