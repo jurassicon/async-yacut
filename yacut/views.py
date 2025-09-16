@@ -1,10 +1,10 @@
-from flask import render_template, request, flash, redirect, url_for
+from flask import render_template, request, flash, redirect, url_for, abort
 from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
 from . import app, db
 from .forms import FileUploaderForm, ShortLinkForm
-from .models import URLMap
+from .models import URLMap, SlugInvalid, SlugConflict, UrlInvalid
 from .shortener import create_short_link
 from .yandexdisk import upload_files_to_disk
 
@@ -12,36 +12,29 @@ from .yandexdisk import upload_files_to_disk
 @app.route('/', methods=['GET', 'POST'], endpoint='index_view')
 async def index_view():
     form = ShortLinkForm()
-    new_url = None
-    old_url = None
-
     if request.method == 'POST' and form.validate_on_submit():
-        original_url = form.original_link.data.strip()
-        custom = form.custom_id.data.strip() if form.custom_id.data else None
-        old_url = original_url
-
         try:
-            obj = create_short_link(original_url, custom_slug=custom)
-            new_url = url_for('follow_short', short=obj.short, _external=True)
-
+            obj = URLMap.create_one(
+                original_url=form.original_link.data,
+                custom_slug=form.custom_id.data or None
+            )
+            short_url = url_for('follow_short', short=obj.short, _external=True)
             flash('Ссылка создана.', 'success')
-        except IntegrityError:
-            db.session.rollback()
-            flash('Предложенный вариант короткой ссылки уже существует.',
-                  'danger')
-        except Exception as e:
+            return render_template('index.html', form=form, new_url=short_url, old_url=obj.original)
+        except SlugConflict as e:
+            form.custom_id.errors.append(str(e))
+        except (SlugInvalid, UrlInvalid) as e:
+            form.custom_id.errors.append(str(e))
+        except Exception:
             app.logger.exception('Ошибка при создании короткой ссылки')
-            flash(str(e), 'danger')
-
-    if new_url:
-        return render_template('index.html', new_url=new_url, old_url=old_url,
-                               form=form)
+            flash('Внутренняя ошибка. Попробуйте позже.', 'danger')
     return render_template('index.html', form=form)
-
 
 @app.route('/<string:short>')
 def follow_short(short):
     row = URLMap.query.filter_by(short=short).first_or_404()
+    if not row:
+        abort(404)
     return redirect(row.original, code=302)
 
 
