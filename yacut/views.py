@@ -1,8 +1,7 @@
 from flask import render_template, request, flash, redirect, url_for, abort
-from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 
-from . import app, db
+from . import app
 from .forms import FileUploaderForm, ShortLinkForm
 from .models import URLMap, SlugInvalid, SlugConflict, UrlInvalid
 from .shortener import create_short_link
@@ -18,9 +17,11 @@ async def index_view():
                 original_url=form.original_link.data,
                 custom_slug=form.custom_id.data or None
             )
-            short_url = url_for('follow_short', short=obj.short, _external=True)
+            short_url = url_for('follow_short', short=obj.short,
+                                _external=True)
             flash('Ссылка создана.', 'success')
-            return render_template('index.html', form=form, new_url=short_url, old_url=obj.original)
+            return render_template('index.html', form=form, new_url=short_url,
+                                   old_url=obj.original)
         except SlugConflict as e:
             form.custom_id.errors.append(str(e))
         except (SlugInvalid, UrlInvalid) as e:
@@ -29,6 +30,7 @@ async def index_view():
             app.logger.exception('Ошибка при создании короткой ссылки')
             flash('Внутренняя ошибка. Попробуйте позже.', 'danger')
     return render_template('index.html', form=form)
+
 
 @app.route('/<string:short>')
 def follow_short(short):
