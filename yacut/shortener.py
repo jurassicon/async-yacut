@@ -8,7 +8,7 @@ from sqlalchemy.exc import IntegrityError
 from yacut import db
 from .models import URLMap
 
-ALPHABET = string.ascii_letters + string.digits  # A-Z a-z 0-9
+ALPHABET = string.ascii_letters + string.digits
 SHORT_URL_LENGTH = 6
 
 
@@ -35,9 +35,9 @@ def normalize_url(url: str) -> str:
 
 
 def create_short_link(
-    original_url: str,
-    custom_slug: Optional[str] = None,
-    attempts: int = 32,
+        original_url: str,
+        custom_slug: Optional[str] = None,
+        attempts: int = 32,
 ):
     original_url = normalize_url(original_url)
     if custom_slug:
@@ -57,7 +57,6 @@ def create_short_link(
             return obj
         except IntegrityError:
             db.session.rollback()
-            # коллизия из-за гонки — пробуем снова
             continue
     raise RuntimeError(
         'Ошибка генерации уникальной короткой ссылки. Повторите попытку.')
